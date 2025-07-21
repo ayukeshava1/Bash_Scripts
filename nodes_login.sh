@@ -4,6 +4,8 @@
 CSV_FILE="input.csv"
 # Log file for output
 LOG_FILE="telnet_login.log"
+# Temporary file to capture expect output
+TEMP_FILE=$(mktemp)
 
 # Check if input.csv exists
 if [[ ! -f "$CSV_FILE" ]]; then
@@ -28,24 +30,32 @@ while IFS=, read -r ip username password; do
   echo "Attempting to log in to $ip..." | tee -a "$LOG_FILE"
 
   # Expect script for Telnet automation
-  /usr/bin/expect <<EOF | tee -a "$LOG_FILE"
+  /usr/bin/expect > "$TEMP_FILE" 2>&1 <<EOF
     set timeout 10
     spawn telnet $ip
     expect {
       "login:" {
         send "$username\r"
-        expect "Password:"
-        send "$password\r"
         expect {
-          "#" {
-            send "whoami\r"
-            expect "#"
-            sleep 5
-            send "exit\r"
-            expect eof
+          "Password:" {
+            send "$password\r"
+            expect {
+              "#" {
+                send "whoami\r"
+                expect "#"
+                sleep 5
+                send "exit\r"
+                expect eof
+                puts "LOGIN_SUCCESS"
+              }
+              default {
+                puts "Login failed for $ip: Invalid credentials"
+                exit 1
+              }
+            }
           }
           default {
-            puts "Login failed for $ip"
+            puts "Login failed for $ip: No password prompt"
             exit 1
           }
         }
@@ -61,8 +71,14 @@ while IFS=, read -r ip username password; do
     }
 EOF
 
-  # Check the exit status of the expect script
-  if [[ $? -eq 0 ]]; then
+  # Capture the exit status of expect
+  EXPECT_STATUS=$?
+
+  # Append expect output to log file
+  cat "$TEMP_FILE" >> "$LOG_FILE"
+
+  # Check for LOGIN_SUCCESS in the output and the expect exit status
+  if [[ $EXPECT_STATUS -eq 0 && $(grep -c "LOGIN_SUCCESS" "$TEMP_FILE") -gt 0 ]]; then
     echo "Successfully logged in and out of $ip" | tee -a "$LOG_FILE"
   else
     echo "Failed to log in to $ip" | tee -a "$LOG_FILE"
@@ -72,5 +88,8 @@ EOF
   sleep 1
 
 done < "$CSV_FILE"
+
+# Clean up temporary file
+rm -f "$TEMP_FILE"
 
 echo "Script completed. Check $LOG_FILE for details."
