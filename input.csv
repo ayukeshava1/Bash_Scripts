@@ -2,7 +2,13 @@ ip,username,password
 192.168.1.10,user1,pass123
 192.168.1.11,user2,pass456
 192.168.1.12,user3,pass789
-./login_nodes.sh: line 15:   268 Done                    echo "Error: Failed to create temporary file."
-       269 Segmentation fault      | tee -a "$LOG_FILE"
+AC_LAB_Node_48# sh ip int br
+        Interface          VrfName      Admin State        Opr State       IP Address          IP Mask           Method          Vlan Id
+           1-1-10          default               Up             Down      30.30.30.41    255.255.255.0           Manual               30
+     MGMT_Lo1_A-1          default               Up               Up   192.168.222.41  255.255.255.255           Manual                0
+  Service_Lo2_A-1          default               Up               Up    192.168.22.41  255.255.255.255           Manual                0
+           1-1-11          default               Up               Up      20.20.20.41    255.255.255.0           Manual               20
+TAC_LAB_Node_48#
+
 
 
