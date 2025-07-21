@@ -2,9 +2,7 @@ ip,username,password
 192.168.1.10,user1,pass123
 192.168.1.11,user2,pass456
 192.168.1.12,user3,pass789
-Attempting to log in to 192.168.222.46...
-./login_nodes.sh: line 34: : No such file or directory
-cat: can't open '': No such file or directory
-Failed to log in to 192.168.222.46
-Script completed. Check telnet_login.log for details.
+./login_nodes.sh: line 15:   268 Done                    echo "Error: Failed to create temporary file."
+       269 Segmentation fault      | tee -a "$LOG_FILE"
+
 
