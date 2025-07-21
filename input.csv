@@ -2,3 +2,6 @@ ip,username,password
 192.168.1.10,user1,pass123
 192.168.1.11,user2,pass456
 192.168.1.12,user3,pass789
+Attempting to log in to 192.168.222.46...
+Successfully logged in and out of 192.168.222.46
+Script completed. Check telnet_login.log for details.
